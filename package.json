@@ -1,0 +1,26 @@
+{
+  "name": "async_js_exercises",
+  "version": "1.0.0",
+  "description": "Async Exercises",
+  "main": "problem1.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "configure-husky": "npx husky install && npx husky add .husky/pre-commit \"npx --no-install lint-staged\""
+  },
+  "author": "",
+  "license": "ISC",
+  "lint-staged": {
+    "**/*.js": [
+      "eslint . --fix",
+      "prettier --write ."
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
+}
