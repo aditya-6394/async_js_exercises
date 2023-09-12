@@ -45,92 +45,161 @@ function fileSystesOperationsUsingCallback() {
 
 // ========================== <<Problem 1 - (Part 2)>>==============================
 
+// function fileSystemOperationsUsingPromise() {
+//   const makingDirectory = new Promise((resolve, reject) => {
+//     fs.mkdir('Promises', (error) => {
+//       if (error) {
+//         console.log(error);
+//         return reject(error);
+//       } else {
+//         console.log('Created folder named: <<Promises>>\n');
+//         return resolve();
+//       }
+//     });
+//   });
+
+//   const makeFiles = makingDirectory
+//     .then(() => {
+//       return new Promise((resolve, reject) => {
+//         for (let index = 1; index <= 3; index++) {
+//           fs.writeFile(`Promises/${index}.json`, data, (error) => {
+//             if (error) {
+//               console.log(error);
+//               return reject();
+//             } else {
+//               console.log(
+//                 `File named: <<${index}.json>> created under folder: <<Promises>>.\n`,
+//               );
+//             }
+//           });
+//         }
+//         return resolve();
+//       });
+//     })
+//     .catch((error) => {
+//       console.log('Error in creating files');
+//       console.log(error);
+//     });
+
+//   setTimeout(() => {
+//     const deleteFiles = makeFiles
+//       .then(() => {
+//         return new Promise((resolve, reject) => {
+//           for (let index = 1; index <= 3; index++) {
+//             fs.unlink(`Promises/${index}.json`, (error) => {
+//               if (error) {
+//                 console.log('Error in deleting file');
+//                 console.log(error);
+//                 return reject();
+//               } else {
+//                 console.log(
+//                   `<<${index}.txt>> deleted successfully from folder: <<Promises>>\n`,
+//                 );
+//               }
+//             });
+//           }
+//           return resolve();
+//         });
+//       })
+//       .catch((error) => {
+//         console.log(error);
+//       });
+
+//     const deleteDirectory = deleteFiles
+//       .then(() => {
+//         return new Promise((resolve, reject) => {
+//           fs.rmdir('Promises', (error) => {
+//             if (error) {
+//               console.log(error);
+//               return reject();
+//             } else {
+//               console.log('Successfully deleted the folder <<Promises>>\n');
+//               return resolve();
+//             }
+//           });
+//         });
+//       })
+//       .catch((error) => {
+//         console.log(error);
+//       });
+
+//     deleteDirectory
+//       .then(() => {
+//         console.log('<<Proccess finished successfully.>>\n');
+//       })
+//       .catch((error) => {
+//         console.log(error);
+//       });
+//   }, 5000);
+// }
+
+// const fs = require('fs');
+
 function fileSystemOperationsUsingPromise() {
-  const makingDirectory = new Promise((resolve, reject) => {
-    fs.mkdir('Promises', (error) => {
-      if (error) {
-        console.log(error);
-        return reject(error);
-      } else {
-        console.log('Created folder named: <<Promises>>\n');
-        return resolve();
-      }
-    });
-  });
-
-  const makingFiles = makingDirectory
-    .then(() => {
-      return new Promise((resolve, reject) => {
-        for (let index = 1; index <= 3; index++) {
-          fs.writeFile(`Promises/${index}.json`, data, (error) => {
-            if (error) {
-              console.log(error);
-              return reject();
-            } else {
-              console.log(
-                `File named: <<${index}.json>> created under folder: <<Promises>>.\n`,
-              );
-            }
-          });
+  function makeDirectory() {
+    return new Promise((resolve, reject) => {
+      fs.mkdir('Directory', (error) => {
+        if (error) {
+          reject();
+        } else {
+          resolve();
         }
-        return resolve();
       });
-    })
-    .catch((error) => {
-      console.log('Error in creating files');
-      console.log(error);
     });
+  }
 
-  setTimeout(() => {
-    const deletingFiles = makingFiles
-      .then(() => {
-        return new Promise((resolve, reject) => {
-          for (let index = 1; index <= 3; index++) {
-            fs.unlink(`Promises/${index}.json`, (error) => {
-              if (error) {
-                console.log('Error in deleting file');
-                console.log(error);
-                return reject();
-              } else {
-                console.log(
-                  `<<${index}.txt>> deleted successfully from folder: <<Promises>>\n`,
-                );
-              }
-            });
-          }
-          return resolve();
-        });
-      })
-      .catch((error) => {
-        console.log(error);
+  function createFile(path) {
+    return new Promise((resolve, reject) => {
+      fs.writeFile(path, 'abc', (error) => {
+        if (error) {
+          reject();
+        } else {
+          resolve();
+        }
       });
+    });
+  }
 
-    const deletingDirectory = deletingFiles
-      .then(() => {
-        return new Promise((resolve, reject) => {
-          fs.rmdir('Promises', (error) => {
-            if (error) {
-              console.log(error);
-              return reject();
-            } else {
-              console.log('Successfully deleted the folder <<Promises>>\n');
-              return resolve();
-            }
-          });
-        });
-      })
-      .catch((error) => {
-        console.log(error);
+  function deleteFile(path) {
+    return new Promise((resolve, reject) => {
+      fs.unlink(path, (error) => {
+        if (error) {
+          reject();
+        } else {
+          resolve();
+        }
       });
+    });
+  }
 
-    deletingDirectory
-      .then(() => {
-        console.log('<<Proccess finished successfully.>>\n');
-      })
-      .catch((error) => {
-        console.log(error);
+  function deleteDirectory(path) {
+    return new Promise((resolve, reject) => {
+      fs.rmdir(path, (error) => {
+        if (error) {
+          reject();
+        } else {
+          resolve();
+        }
       });
-  }, 5000);
+    });
+  }
+
+  try {
+    makeDirectory()
+      .then(createFile('Directory/fileOne.txt'))
+      .then(createFile('Directory/fileTwo.txt'))
+      .then(createFile('Directory/fileThree.txt'))
+      .then(
+        setTimeout(() => {
+          deleteFile('Directory/fileOne.txt')
+            .then(deleteFile('Directory/fileTwo.txt'))
+            .then(deleteFile('Directory/fileThree.txt'))
+            .then(deleteDirectory('Directory'));
+        }, 5000),
+      );
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // ========================== <<Problem 1 - (Part 3)>>==============================
@@ -145,9 +214,9 @@ function fileSystemOperationsUsingAsyncAndAwait() {
           `File: <<${index}.json>> created successfully inside folder asyncAndAwait\n`,
         );
       }
-      await setTimeout(() => {
+      setTimeout(async () => {
         for (let index = 1; index <= 3; index++) {
-          deleteFile(`${index}`);
+          await deleteFile(`${index}`);
           console.log(`File: <<${index}.json>> deleted successfully\n`);
         }
 
